@@ -23,3 +23,4 @@ sqlparse==0.4.3
 typing_extensions==4.5.0
 urllib3==2.0.2
 whitenoise==6.4.0
+django-browser-reload==1.9.0
