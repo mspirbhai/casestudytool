@@ -17,7 +17,11 @@ class CaseListView(LoginRequiredMixin, ListView):
 
 
 class CaseLogListView(LoginRequiredMixin, ListView):
-    model = CaseLog
+    def get_queryset(self):
+        self.caselog = get_object_or_404(CaseLog, pk=self.kwargs["pk"])
+        return CaseLog.objects.filter(case_name=self.caselog)
+
+    #    queryset = CaseLog.objects.filter(case_name__pk=self.kwargs["pk"])
     template_name = "pages/caselogs.html"
 
 

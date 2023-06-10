@@ -17,6 +17,9 @@ class Case(BaseModel):
     def __str__(self):
         return self.case_name
 
+    def get_absolute_url(self):
+        return reverse("cases", kwargs={"pk": self.pk})
+
 
 class CaseLog(BaseModel):
     title = models.CharField(max_length=200)

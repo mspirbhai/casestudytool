@@ -5,10 +5,9 @@
 
 {% block content %}
 <h1>Show all cases for Logged in User</h1>
-<h2><a href="{% url 'caselogs' %}" class="nav-link px-2 link-dark">CaseLogs</a></h2>
 <ul>
   {% for case in case_list %}
-  <li><a href="">{{ case.case_name }}</a> created at {{case.created_at}}</li>
+  <li><a href=" {% url 'caselogs' case.pk %}">{{ case.case_name }}</a> created at {{case.created_at}}</li>
   {% endfor %}
 </ul>
 {% endblock content %}

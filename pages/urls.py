@@ -12,6 +12,6 @@ urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
     path("about/", AboutPageView.as_view(), name="about"),
     path("cases/", CaseListView.as_view(), name="cases"),
-    path("caselogs/", CaseLogListView.as_view(), name="caselogs"),
+    path("cases/<int:pk>/", CaseLogListView.as_view(), name="caselogs"),
     path("caselogs/<int:pk>/", CaseLogDetailView.as_view(), name="caselog_detail"),
 ]
