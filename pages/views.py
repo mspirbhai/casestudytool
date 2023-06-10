@@ -1,5 +1,6 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Case
 
 
 class HomePageView(TemplateView):
@@ -8,3 +9,8 @@ class HomePageView(TemplateView):
 
 class AboutPageView(LoginRequiredMixin, TemplateView):
     template_name = "pages/about.html"
+
+
+class CasePageView(LoginRequiredMixin, ListView):
+    model = Case
+    template_name = "pages/case.html"
