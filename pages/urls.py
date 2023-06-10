@@ -1,9 +1,17 @@
 from django.urls import path
 
-from .views import HomePageView, AboutPageView, CasePageView
+from .views import (
+    HomePageView,
+    AboutPageView,
+    CaseListView,
+    CaseLogListView,
+    CaseLogDetailView,
+)
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
     path("about/", AboutPageView.as_view(), name="about"),
-    path("cases/", CasePageView.as_view(), name="cases"),
+    path("cases/", CaseListView.as_view(), name="cases"),
+    path("caselogs/", CaseLogListView.as_view(), name="caselogs"),
+    path("caselogs/<int:pk>/", CaseLogDetailView.as_view(), name="caselog_detail"),
 ]

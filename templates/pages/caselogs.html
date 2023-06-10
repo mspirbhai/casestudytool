@@ -1,0 +1,13 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Case Logs{% endblock title %}
+
+{% block content %}
+<h1>Show all case logs for Logged in User</h1>
+<ul>
+  {% for caselog in caselog_list %}
+  <li><a href="{% url 'caselog_detail' caselog.pk %}">{{ caselog.title }}</a> from {{ caselog.case_name }} created at {{case.created_at}}</li>
+  {% endfor %}
+</ul>
+{% endblock content %}

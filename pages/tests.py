@@ -1,7 +1,8 @@
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import Case
+from pages.models import Case
+from accounts.models import CustomUser
 
 
 class HomepageTests(SimpleTestCase):
@@ -19,8 +20,9 @@ class HomepageTests(SimpleTestCase):
 class AboutpageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        User = get_user_model()
-        cls.user = User.objects.create_user("Mustafa," "mustafa@dev.io", "some_pass")
+        cls.user = CustomUser.objects.create_user(
+            "Mustafa," "mustafa@dev.io", "some_pass"
+        )
 
     def test_url_exists_at_correct_location_and_redirects_to_login(self):
         response = self.client.get("/about/")
@@ -37,8 +39,9 @@ class AboutpageTests(TestCase):
 class CasepageTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        User = get_user_model()
-        cls.user = User.objects.create_user("Mustafa," "mustafa@dev.io", "some_pass")
+        cls.user = CustomUser.objects.create_user(
+            "Mustafa," "mustafa@dev.io", "some_pass"
+        )
         cls.case = Case.objects.create(case_name="Test Case")
 
     def test_url_exists_at_correct_location_and_redirects_to_login(self):
