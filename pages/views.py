@@ -13,4 +13,4 @@ class AboutPageView(LoginRequiredMixin, TemplateView):
 
 class CasePageView(LoginRequiredMixin, ListView):
     model = Case
-    template_name = "pages/case.html"
+    template_name = "pages/cases.html"
