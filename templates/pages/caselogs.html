@@ -5,9 +5,14 @@
 
 {% block content %}
 <h1>Show all case logs for Logged in User</h1>
-<ul>
+<div class="list-group">
   {% for caselog in caselog_list %}
-  <li><a href="{% url 'caselog_detail' caselog.pk %}">{{ caselog.title }}</a> from {{ caselog.case_name }} created at {{case.created_at}}</li>
+  <a href="{% url 'caselog_detail' caselog.pk %}" class="list-group-item list-group-item-action" aria-current="true">
+  <div class="d-flex w-100 justify-content-between">
+    <h5 class="mb-1">{{ caselog.title }}</h5>
+  </div>
+  <p class="mb-1">from {{ caselog.case_name }} created at {{caselog.created_at}}</p>
+  </a>
   {% endfor %}
-</ul>
+</div>
 {% endblock content %}

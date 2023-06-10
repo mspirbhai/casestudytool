@@ -13,6 +13,7 @@ class BaseModel(models.Model):
 
 class Case(BaseModel):
     case_name = models.CharField(unique=True, max_length=255)
+    description = models.CharField(max_length=255)
 
     def __str__(self):
         return self.case_name

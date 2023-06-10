@@ -4,10 +4,15 @@
 {% block title %}Case Studies{% endblock title %}
 
 {% block content %}
-<h1>Show all cases for Logged in User</h1>
-<ul>
+<h1>Show All Cases For Logged In User</h1>
+<div class="list-group">
   {% for case in case_list %}
-  <li><a href=" {% url 'caselogs' case.pk %}">{{ case.case_name }}</a> created at {{case.created_at}}</li>
+  <a href=" {% url 'caselogs' case.pk %}" class="list-group-item list-group-item-action" aria-current="true">
+  <div class="d-flex w-100 justify-content-between">
+    <h5 class="mb-1">{{ case.case_name }}</h5>
+  </div>
+  <p class="mb-1">{{ case.description }}</p>
+  </a>
   {% endfor %}
-</ul>
+</div>
 {% endblock content %}
