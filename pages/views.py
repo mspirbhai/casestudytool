@@ -1,5 +1,6 @@
-from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, ListView, TemplateView
+
 from .models import Case, CaseLog
 
 
@@ -18,10 +19,9 @@ class CaseListView(LoginRequiredMixin, ListView):
 
 class CaseLogListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
-        self.caselog = get_object_or_404(CaseLog, pk=self.kwargs["pk"])
-        return CaseLog.objects.filter(case_name=self.caselog)
+        queryset = CaseLog.objects.filter(case_name=self.kwargs["pk"])
+        return queryset
 
-    #    queryset = CaseLog.objects.filter(case_name__pk=self.kwargs["pk"])
     template_name = "pages/caselogs.html"
 
 
