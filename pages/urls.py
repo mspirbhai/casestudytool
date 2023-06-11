@@ -7,6 +7,7 @@ from .views import (
     CaseLogListView,
     CaseLogDetailView,
     CaseLogCreateView,
+    CaseLogUpdateView,
 )
 
 urlpatterns = [
@@ -15,5 +16,6 @@ urlpatterns = [
     path("cases/", CaseListView.as_view(), name="cases"),
     path("cases/<int:pk>/", CaseLogListView.as_view(), name="caselogs"),
     path("caselog/<int:pk>/", CaseLogDetailView.as_view(), name="caselog_detail"),
-    path("caselog/new/", CaseLogCreateView.as_view(), name="caselog_new"),
+    path("caselog/new/<int:pk>/", CaseLogCreateView.as_view(), name="caselog_new"),
+    path("caselog/edit/<int:pk>/", CaseLogUpdateView.as_view(), name="caselog_edit"),
 ]

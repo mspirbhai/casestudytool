@@ -32,4 +32,4 @@ class CaseLog(BaseModel):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("case_detail", kwargs={"pk": self.pk})
+        return reverse("caselog_detail", kwargs={"pk": self.pk})

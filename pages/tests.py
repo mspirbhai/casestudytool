@@ -78,12 +78,12 @@ class CaseLogsPageTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("caselogs", kwargs={"pk": 1}))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "pages/caselogs.html")
+        self.assertTemplateUsed(response, "pages/caselog.html")
         self.assertContains(response, "<h1>Show all case logs for Logged in User</h1>")
         self.assertContains(response, '<h5 class="mb-1">Test Case Log 1</h5>')
 
     def test_caselogs_url_exists_at_correct_location_and_redirects_to_login(self):
-        response = self.client.get("/caselogs/1/")
+        response = self.client.get("/caselog/1/")
         self.assertEqual(response.status_code, 302)
 
     def test_caselog_detail_with_pk_1_logged_in(self):

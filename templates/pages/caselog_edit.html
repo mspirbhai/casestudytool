@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+
+{% load static %}
+{% block title %}
+  Case Log Edit
+{% endblock title %}
+{% block content %}
+  <h1>Edit Case Log</h1>
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Update">
+  </form>
+{% endblock content %}

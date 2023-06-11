@@ -6,6 +6,9 @@
 {% endblock title %}
 {% block content %}
   <h1>Show Details for Case log {{ caselog.case_name }} for Logged in User</h1>
+  <h5>
+    <a href="{% url 'caselog_edit' caselog.pk %}">Edit case log</a>
+  </h5>
   <div class="case-log-entry">
     <h2>{{ caselog.title }} written by {{ caselog.author }}</h2>
     <p>{{ caselog.body }}</p>
