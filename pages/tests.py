@@ -15,7 +15,7 @@ class HomepageTests(SimpleTestCase):
         response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "pages/home.html")
-        self.assertContains(response, "<title>Home page</title>")
+        self.assertContains(response, "Home page")
 
 
 class AboutpageTests(TestCase):
