@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (
     DetailView,
     ListView,
@@ -8,9 +8,9 @@ from django.views.generic import (
 )
 
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from .models import Case, CaseLog
-from .forms import CaseLogCreateForm
 
 
 class HomePageView(TemplateView):
@@ -50,18 +50,31 @@ class CaseLogDetailView(LoginRequiredMixin, DetailView):
 
 
 class CaseLogCreateView(LoginRequiredMixin, CreateView):
-    form_class = CaseLogCreateForm
+    # form_class = CaseLogCreateForm
     model = CaseLog
     template_name = "pages/caselog_new.html"
+    fields = ["title", "body"]
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.case_name = Case.objects.get(pk=self.kwargs["pk"])
+        return super().form_valid(form)
+
+
+"""
     def get_initial(self):
         initial = super().get_initial()
         initial["author"] = self.request.user
         initial["case_name"] = Case.objects.get(pk=self.kwargs["pk"])
         return initial
+"""
 
 
-class CaseLogUpdateView(LoginRequiredMixin, UpdateView):
+class CaseLogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CaseLog
     template_name = "pages/caselog_edit.html"
     fields = ["title", "body"]
+
+    def test_func(self):
+        obj = self.get_object()
+        return obj.author == self.request.user
