@@ -22,7 +22,7 @@ class CaseLogListView(LoginRequiredMixin, ListView):
         queryset = CaseLog.objects.filter(case_name=self.kwargs["pk"])
         return queryset
 
-    template_name = "pages/caselogs.html"
+    template_name = "pages/caselog.html"
 
 
 class CaseLogDetailView(LoginRequiredMixin, DetailView):

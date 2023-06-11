@@ -1,18 +1,20 @@
-{% extends '_base.html' %}
+{% extends "_base.html" %}
 {% load static %}
-
-{% block title %}Case Studies{% endblock title %}
-
+{% block title %}
+  Case Studies
+{% endblock title %}
 {% block content %}
-<h1>Show All Cases For Logged In User</h1>
-<div class="list-group">
-  {% for case in case_list %}
-  <a href=" {% url 'caselogs' case.pk %}" class="list-group-item list-group-item-action" aria-current="true">
-  <div class="d-flex w-100 justify-content-between">
-    <h5 class="mb-1">{{ case.case_name }}</h5>
+  <h1>Show All Cases For Logged In User</h1>
+  <div class="list-group">
+    {% for case in case_list %}
+      <a href=" {% url 'caselogs' case.pk %}"
+         class="list-group-item list-group-item-action"
+         aria-current="true">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ case.case_name }}</h5>
+        </div>
+        <p class="mb-1">{{ case.description }}</p>
+      </a>
+    {% endfor %}
   </div>
-  <p class="mb-1">{{ case.description }}</p>
-  </a>
-  {% endfor %}
-</div>
 {% endblock content %}
