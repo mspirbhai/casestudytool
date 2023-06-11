@@ -6,6 +6,9 @@
 {% endblock title %}
 {% block content %}
   <h1>Show All Cases For Logged In User</h1>
+  <h5>
+    <a href="{% url 'cases_new' %}">New Case</a>
+  </h5>
   <div class="list-group">
     {% for case in case_list %}
       <a href=" {% url 'caselogs' case.pk %}"

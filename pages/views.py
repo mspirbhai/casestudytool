@@ -7,6 +7,8 @@ from django.views.generic import (
     UpdateView,
 )
 
+from django.urls import reverse_lazy
+
 from .models import Case, CaseLog
 from .forms import CaseLogCreateForm
 
@@ -22,6 +24,13 @@ class AboutPageView(LoginRequiredMixin, TemplateView):
 class CaseListView(LoginRequiredMixin, ListView):
     model = Case
     template_name = "pages/cases.html"
+
+
+class CaseCreateView(LoginRequiredMixin, CreateView):
+    model = Case
+    template_name = "pages/cases_new.html"
+    fields = ["case_name", "description"]
+    success_url = reverse_lazy("cases")
 
 
 class CaseLogListView(LoginRequiredMixin, ListView):

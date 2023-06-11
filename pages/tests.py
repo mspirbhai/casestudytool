@@ -2,6 +2,8 @@ from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from pages.models import Case, CaseLog
+from pages.forms import CaseLogCreateForm
+from pages.views import CaseLogCreateView
 
 
 class HomepageTests(SimpleTestCase):
@@ -97,3 +99,55 @@ class CaseLogsPageTests(TestCase):
         self.assertContains(
             response, "<h2>Test Case Log 1 written by mustafa@dev.io</h2>"
         )
+
+    def test_case_creation(self):
+        self.client.force_login(self.user)
+        data = {
+            "case_name": "Test Case 2",
+            "description": "This is a test case.",
+        }
+        response = self.client.post(reverse("cases_new"), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("cases"))
+        self.assertEqual(Case.objects.last().case_name, "Test Case 2")
+        self.assertEqual(Case.objects.last().description, "This is a test case.")
+
+    def test_caselog_create(self):
+        self.client.force_login(self.user)
+        data = {
+            "title": "Test Case Log 2",
+            "author": self.user,
+            "case_name": self.case.case_name,
+            "body": "This is a test case log.",
+        }
+        response = self.client.post(
+            reverse("caselog_new", kwargs={"pk": self.case.pk}), data=data
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse("caselog_detail", kwargs={"pk": CaseLog.objects.last().pk}),
+        )
+        self.assertEqual(CaseLog.objects.last().author, self.user)
+        self.assertEqual(CaseLog.objects.last().title, "Test Case Log 2")
+        self.assertEqual(CaseLog.objects.last().case_name, self.case)
+        self.assertEqual(CaseLog.objects.last().body, "This is a test case log.")
+
+    def test_caselog_edit(self):
+        self.client.force_login(self.user)
+        data = {
+            "title": "Test Case Log 3",
+            "body": "This is a test case log edited.",
+        }
+        response = self.client.post(
+            reverse("caselog_edit", kwargs={"pk": CaseLog.objects.last().pk}), data=data
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse("caselog_detail", kwargs={"pk": CaseLog.objects.last().pk}),
+        )
+        self.assertEqual(CaseLog.objects.last().author, self.user)
+        self.assertEqual(CaseLog.objects.last().title, "Test Case Log 3")
+        self.assertEqual(CaseLog.objects.last().case_name, self.case)
+        self.assertEqual(CaseLog.objects.last().body, "This is a test case log edited.")
