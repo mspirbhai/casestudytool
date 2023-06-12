@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
+import uuid
 
 
 class BaseModel(models.Model):
@@ -24,6 +25,10 @@ class Case(BaseModel):
 
 
 class CaseLog(BaseModel):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False)
     title = models.CharField(max_length=200)
     case_name = models.ForeignKey("pages.Case", on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
