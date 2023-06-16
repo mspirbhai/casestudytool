@@ -16,6 +16,7 @@ class BaseModel(models.Model):
 class Case(BaseModel):
     case_name = models.CharField(unique=True, max_length=255)
     description = models.CharField(max_length=255)
+    project = models.ForeignKey("pages.Project", blank=True, null=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.case_name
@@ -39,3 +40,13 @@ class CaseLog(BaseModel):
 
     def get_absolute_url(self):
         return reverse("caselog_detail", kwargs={"pk": self.pk})
+
+class Project(BaseModel):
+    id= models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False)
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.case_name
