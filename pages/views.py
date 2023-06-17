@@ -10,7 +10,7 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 
-from .models import Case, CaseLog
+from .models import Case, CaseLog, TrackedMetric
 
 
 class HomePageView(TemplateView):
@@ -49,11 +49,16 @@ class CaseLogDetailView(LoginRequiredMixin, DetailView):
     template_name = "pages/caselog_detail.html"
 
 
+class TrackedMetricDetailView(LoginRequiredMixin, DetailView):
+    model = TrackedMetric
+    template_name = "pages/trackedmetric_detail.html"
+
+
 class CaseLogCreateView(LoginRequiredMixin, CreateView):
     # form_class = CaseLogCreateForm
     model = CaseLog
     template_name = "pages/caselog_new.html"
-    fields = ["title", "body"]
+    fields = ["title", "body", "tracked_value", "tracked_description"]
 
     def form_valid(self, form):
         form.instance.author = self.request.user

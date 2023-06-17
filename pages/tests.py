@@ -91,7 +91,9 @@ class CaseLogsPageTests(TestCase):
 
     def test_caselog_detail_with_pk_cls_caselog_logged_in(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("caselog_detail", kwargs={"pk": self.caselog.pk}))
+        response = self.client.get(
+            reverse("caselog_detail", kwargs={"pk": self.caselog.pk})
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "pages/caselog_detail.html")
         self.assertContains(
