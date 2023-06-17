@@ -126,41 +126,24 @@ class CaseLogsPageTests(TestCase):
             "case_name": self.case,
             "body": "This is a test case log.",
         }
-        print(
-            "Before post: ",
-            CaseLog.objects.all().last(),
-            " and caselog count ",
-            CaseLog.objects.all().count(),
-        )
+
         response = self.client.post(
             reverse("caselog_new", kwargs={"pk": self.case.pk}), data=data
-        )
-        print(
-            "After post: ",
-            CaseLog.objects.all().last(),
-            " and caselog count ",
-            CaseLog.objects.all().count(),
         )
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
             reverse(
                 "caselog_detail",
-                kwargs={"pk": CaseLog.objects.order_by("updated_at").last().pk},
+                kwargs={"pk": CaseLog.objects.latest("updated_at").pk},
             ),
         )
 
+        self.assertEqual(CaseLog.objects.latest("updated_at").author, self.user)
+        self.assertEqual(CaseLog.objects.latest("updated_at").title, "Test Case Log 2")
+        self.assertEqual(CaseLog.objects.latest("updated_at").case_name, self.case)
         self.assertEqual(
-            CaseLog.objects.order_by("updated_at").last().author, self.user
-        )
-        self.assertEqual(
-            CaseLog.objects.order_by("updated_at").last().title, "Test Case Log 2"
-        )
-        self.assertEqual(
-            CaseLog.objects.order_by("updated_at").last().case_name, self.case
-        )
-        self.assertEqual(
-            CaseLog.objects.order_by("updated_at").last().body,
+            CaseLog.objects.latest("updated_at").body,
             "This is a test case log.",
         )
 
@@ -171,14 +154,21 @@ class CaseLogsPageTests(TestCase):
             "body": "This is a test case log edited.",
         }
         response = self.client.post(
-            reverse("caselog_edit", kwargs={"pk": CaseLog.objects.last().pk}), data=data
+            reverse(
+                "caselog_edit", kwargs={"pk": CaseLog.objects.latest("updated_at").pk}
+            ),
+            data=data,
         )
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
-            reverse("caselog_detail", kwargs={"pk": CaseLog.objects.last().pk}),
+            reverse(
+                "caselog_detail", kwargs={"pk": CaseLog.objects.latest("updated_at").pk}
+            ),
         )
-        self.assertEqual(CaseLog.objects.last().author, self.user)
-        self.assertEqual(CaseLog.objects.last().title, "Test Case Log 3")
-        self.assertEqual(CaseLog.objects.last().case_name, self.case)
-        self.assertEqual(CaseLog.objects.last().body, "This is a test case log edited.")
+        self.assertEqual(CaseLog.objects.latest("updated_at").author, self.user)
+        self.assertEqual(CaseLog.objects.latest("updated_at").title, "Test Case Log 3")
+        self.assertEqual(CaseLog.objects.latest("updated_at").case_name, self.case)
+        self.assertEqual(
+            CaseLog.objects.latest("updated_at").body, "This is a test case log edited."
+        )
