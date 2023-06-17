@@ -78,7 +78,7 @@ class CaseLogCreateView(LoginRequiredMixin, CreateView):
 class CaseLogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CaseLog
     template_name = "pages/caselog_edit.html"
-    fields = ["title", "body"]
+    fields = ["title", "body", "tracked_value", "tracked_description"]
 
     def test_func(self):
         obj = self.get_object()
