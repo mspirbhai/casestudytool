@@ -49,6 +49,10 @@ class CasepageTests(TestCase):
         response = self.client.get("/cases/")
         self.assertEqual(response.status_code, 302)
 
+    def test_cases_url_exists_at_correct_location_and_redirects_to_login(self):
+        response = self.client.get("/cases/1/")
+        self.assertEqual(response.status_code, 302)
+
     def test_cases_logged_in(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse("cases"))
@@ -56,6 +60,18 @@ class CasepageTests(TestCase):
         self.assertTemplateUsed(response, "pages/cases.html")
         self.assertContains(response, "<h1>Show All Cases For Logged In User</h1>")
         self.assertContains(response, '<h5 class="mb-1">Test Case</h5>')
+
+    def test_case_creation(self):
+        self.client.force_login(self.user)
+        data = {
+            "case_name": "Test Case 2",
+            "description": "This is a test case.",
+        }
+        response = self.client.post(reverse("cases_new"), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("cases"))
+        self.assertEqual(Case.objects.last().case_name, "Test Case 2")
+        self.assertEqual(Case.objects.last().description, "This is a test case.")
 
 
 class CaseLogsPageTests(TestCase):
@@ -72,9 +88,8 @@ class CaseLogsPageTests(TestCase):
             body="Test Case Log 1 Body Text",
         )
 
-    def test_cases_url_exists_at_correct_location_and_redirects_to_login(self):
-        response = self.client.get("/cases/1/")
-        self.assertEqual(response.status_code, 302)
+    def setUp(self):
+        pass
 
     def test_caselog_list_with_pk_1_logged_in(self):
         self.client.force_login(self.user)
@@ -103,18 +118,6 @@ class CaseLogsPageTests(TestCase):
             response, "<h2>Test Case Log 1 written by mustafa@dev.io</h2>"
         )
 
-    def test_case_creation(self):
-        self.client.force_login(self.user)
-        data = {
-            "case_name": "Test Case 2",
-            "description": "This is a test case.",
-        }
-        response = self.client.post(reverse("cases_new"), data=data)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse("cases"))
-        self.assertEqual(Case.objects.last().case_name, "Test Case 2")
-        self.assertEqual(Case.objects.last().description, "This is a test case.")
-
     def test_caselog_create(self):
         self.client.force_login(self.user)
         data = {
@@ -123,18 +126,43 @@ class CaseLogsPageTests(TestCase):
             "case_name": self.case,
             "body": "This is a test case log.",
         }
+        print(
+            "Before post: ",
+            CaseLog.objects.all().last(),
+            " and caselog count ",
+            CaseLog.objects.all().count(),
+        )
         response = self.client.post(
             reverse("caselog_new", kwargs={"pk": self.case.pk}), data=data
+        )
+        print(
+            "After post: ",
+            CaseLog.objects.all().last(),
+            " and caselog count ",
+            CaseLog.objects.all().count(),
         )
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
-            reverse("caselog_detail", kwargs={"pk": CaseLog.objects.last().pk}),
+            reverse(
+                "caselog_detail",
+                kwargs={"pk": CaseLog.objects.order_by("updated_at").last().pk},
+            ),
         )
-        self.assertEqual(CaseLog.objects.last().author, self.user)
-        self.assertEqual(CaseLog.objects.last().title, "Test Case Log 2")
-        self.assertEqual(CaseLog.objects.last().case_name, self.case)
-        self.assertEqual(CaseLog.objects.last().body, "This is a test case log.")
+
+        self.assertEqual(
+            CaseLog.objects.order_by("updated_at").last().author, self.user
+        )
+        self.assertEqual(
+            CaseLog.objects.order_by("updated_at").last().title, "Test Case Log 2"
+        )
+        self.assertEqual(
+            CaseLog.objects.order_by("updated_at").last().case_name, self.case
+        )
+        self.assertEqual(
+            CaseLog.objects.order_by("updated_at").last().body,
+            "This is a test case log.",
+        )
 
     def test_caselog_edit(self):
         self.client.force_login(self.user)
