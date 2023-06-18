@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from pages.models import Case, CaseLog
+from pages.models import Case, CaseLog, Project, TrackedMetric
 from pages.forms import CaseLogCreateForm
 from pages.views import CaseLogCreateView
 
@@ -43,7 +43,12 @@ class CasepageTests(TestCase):
         cls.user = get_user_model().objects.create_user(
             username="Mustafa", email="mustafa@dev.io", password="some_pass"
         )
-        cls.case = Case.objects.create(case_name="Test Case", description="Descripton")
+        cls.project = Project.objects.create(name="Test Project")
+        cls.case = Case.objects.create(
+            name="Test Case",
+            description="Descripton",
+            project=Project.objects.get(name="Test Project"),
+        )
 
     def test_url_exists_at_correct_location_and_redirects_to_login(self):
         response = self.client.get("/cases/")
@@ -64,13 +69,14 @@ class CasepageTests(TestCase):
     def test_case_creation(self):
         self.client.force_login(self.user)
         data = {
-            "case_name": "Test Case 2",
+            "name": "Test Case 2",
             "description": "This is a test case.",
+            "project": self.project.pk,
         }
         response = self.client.post(reverse("cases_new"), data=data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("cases"))
-        self.assertEqual(Case.objects.last().case_name, "Test Case 2")
+        self.assertEqual(Case.objects.last().name, "Test Case 2")
         self.assertEqual(Case.objects.last().description, "This is a test case.")
 
 
@@ -80,10 +86,15 @@ class CaseLogsPageTests(TestCase):
         cls.user = get_user_model().objects.create_user(
             username="Mustafa", email="mustafa@dev.io", password="some_pass"
         )
-        cls.case = Case.objects.create(case_name="Test Case", description="Descripton")
+        cls.project = Project.objects.create(name="Test Project")
+        cls.case = Case.objects.create(
+            name="Test Case",
+            description="Descripton",
+            project=Project.objects.get(name="Test Project"),
+        )
         cls.caselog = CaseLog.objects.create(
             title="Test Case Log 1",
-            case_name=cls.case,
+            case=cls.case,
             author=cls.user,
             body="Test Case Log 1 Body Text",
         )
@@ -123,7 +134,7 @@ class CaseLogsPageTests(TestCase):
         data = {
             "title": "Test Case Log 2",
             "author": self.user,
-            "case_name": self.case,
+            "case": self.case,
             "body": "This is a test case log.",
         }
 
@@ -141,7 +152,7 @@ class CaseLogsPageTests(TestCase):
 
         self.assertEqual(CaseLog.objects.latest("updated_at").author, self.user)
         self.assertEqual(CaseLog.objects.latest("updated_at").title, "Test Case Log 2")
-        self.assertEqual(CaseLog.objects.latest("updated_at").case_name, self.case)
+        self.assertEqual(CaseLog.objects.latest("updated_at").case, self.case)
         self.assertEqual(
             CaseLog.objects.latest("updated_at").body,
             "This is a test case log.",
@@ -168,7 +179,7 @@ class CaseLogsPageTests(TestCase):
         )
         self.assertEqual(CaseLog.objects.latest("updated_at").author, self.user)
         self.assertEqual(CaseLog.objects.latest("updated_at").title, "Test Case Log 3")
-        self.assertEqual(CaseLog.objects.latest("updated_at").case_name, self.case)
+        self.assertEqual(CaseLog.objects.latest("updated_at").case, self.case)
         self.assertEqual(
             CaseLog.objects.latest("updated_at").body, "This is a test case log edited."
         )

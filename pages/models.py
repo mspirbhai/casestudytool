@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
-import uuid
 
 
 class BaseModel(models.Model):
@@ -29,36 +28,44 @@ class TrackedMetric(BaseModel):
     )
 
     def __str__(self):
+        return self.name + " " + self.calculation
+
+    def get_absolute_url(self):
+        return reverse("trackedmetric_detail", kwargs={"pk": self.pk})
+
+
+class Project(BaseModel):
+    name = models.CharField(max_length=200)
+    tracked_metrics = models.ManyToManyField(TrackedMetric, blank=True)
+
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("trackermetric_detail", kwargs={"pk": self.pk})
+        return reverse("project_detail", kwargs={"pk": self.pk})
 
 
 class Case(BaseModel):
-    case_name = models.CharField(unique=True, max_length=255)
-    description = models.CharField(max_length=255)
-    project = models.ForeignKey(
-        "pages.Project", blank=True, null=True, on_delete=models.DO_NOTHING
-    )
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=500)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.case_name
+        return self.name
 
     def get_absolute_url(self):
         return reverse("cases", kwargs={"pk": self.pk})
 
 
 class CaseLog(BaseModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
-    case_name = models.ForeignKey(Case, on_delete=models.CASCADE)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     body = models.TextField()
     tracked_value = models.DecimalField(
         max_digits=19, decimal_places=3, null=True, blank=True, default=None
     )
-    tracked_description = models.ForeignKey(
+    tracked_metric = models.ForeignKey(
         TrackedMetric,
         null=True,
         blank=True,
@@ -79,20 +86,12 @@ class CaseLog(BaseModel):
                 check=(
                     models.Q(
                         tracked_value__isnull=True,
-                        tracked_description__isnull=True,
+                        tracked_metric__isnull=True,
                     )
                     | models.Q(
                         tracked_value__isnull=False,
-                        tracked_description__isnull=False,
+                        tracked_metric__isnull=False,
                     )
                 ),
             )
         ]
-
-
-class Project(BaseModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.case_name

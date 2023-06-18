@@ -1,4 +1,6 @@
+from typing import Optional, Type
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.forms.models import BaseModelForm
 from django.views.generic import (
     DetailView,
     ListView,
@@ -29,7 +31,7 @@ class CaseListView(LoginRequiredMixin, ListView):
 class CaseCreateView(LoginRequiredMixin, CreateView):
     model = Case
     template_name = "pages/cases_new.html"
-    fields = ["case_name", "description"]
+    fields = ["name", "description", "project"]
     success_url = reverse_lazy("cases")
 
 
@@ -38,7 +40,7 @@ class CaseLogListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(case_name=self.kwargs["pk"])
+        queryset = queryset.filter(case=self.kwargs["pk"])
         return queryset
 
     template_name = "pages/caselog.html"
@@ -49,20 +51,15 @@ class CaseLogDetailView(LoginRequiredMixin, DetailView):
     template_name = "pages/caselog_detail.html"
 
 
-class TrackedMetricDetailView(LoginRequiredMixin, DetailView):
-    model = TrackedMetric
-    template_name = "pages/trackedmetric_detail.html"
-
-
 class CaseLogCreateView(LoginRequiredMixin, CreateView):
     # form_class = CaseLogCreateForm
     model = CaseLog
     template_name = "pages/caselog_new.html"
-    fields = ["title", "body", "tracked_value", "tracked_description"]
+    fields = ["title", "body", "tracked_value", "tracked_metric"]
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.case_name = Case.objects.get(pk=self.kwargs["pk"])
+        form.instance.case = Case.objects.get(pk=self.kwargs["pk"])
         return super().form_valid(form)
 
 
@@ -78,8 +75,13 @@ class CaseLogCreateView(LoginRequiredMixin, CreateView):
 class CaseLogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CaseLog
     template_name = "pages/caselog_edit.html"
-    fields = ["title", "body", "tracked_value", "tracked_description"]
+    fields = ["title", "body", "tracked_value", "tracked_metric"]
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
+
+
+class TrackedMetricDetailView(LoginRequiredMixin, DetailView):
+    model = TrackedMetric
+    template_name = "pages/trackedmetric_detail.html"
