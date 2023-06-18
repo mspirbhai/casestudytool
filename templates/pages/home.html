@@ -2,13 +2,20 @@
 
 {% load static %}
 {% block title %}
-  Home page
+  Project List
 {% endblock title %}
 {% block content %}
-  <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-    <img src="{% static 'images/logo.png' height="100%" width="100%" %}"
-         class="img-fluid"
-         alt="DjangoX logo" />
-    <p class="lead">A Django starter project with batteries.</p>
+  <h1>Show All Projects For Logged In User</h1>
+  <h5>
+    <a href="{% url 'cases' %}">Case List</a>
+  </h5>
+  <div class="list-group">
+    {% for project in project_list %}
+      <p>{{ project.name }} is tracking</p>
+      <p>metrics:</p>
+      {% for metric in project.tracked_metrics.all %}<p>{{ metric }}</p>{% endfor %}
+      <p>users:</p>
+      {% for author in project.author.all %}<p>{{ author }}</p>{% endfor %}
+    {% endfor %}
   </div>
 {% endblock content %}
