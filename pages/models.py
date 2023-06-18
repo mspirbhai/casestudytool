@@ -14,8 +14,19 @@ class BaseModel(models.Model):
 
 
 class TrackedMetric(BaseModel):
-    name = models.CharField(max_length=200, primary_key=True)
+    class CALCULATION(models.TextChoices):
+        SUM = "SUM"
+        MEDIAN = "MED"
+        MEAN = "MEA"
+        MODE = "MOD"
+
+    name = models.CharField(max_length=200)
     explanation = models.CharField(max_length=500)
+    calculation = models.CharField(
+        max_length=3,
+        choices=CALCULATION.choices,
+        default=CALCULATION.SUM,
+    )
 
     def __str__(self):
         return self.name
