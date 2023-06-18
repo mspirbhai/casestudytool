@@ -1,5 +1,6 @@
-from typing import Optional, Type
+from typing import Any, Optional, Type
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.views.generic import (
     DetailView,
@@ -18,6 +19,11 @@ from .models import Case, CaseLog, TrackedMetric, Project
 class HomePageView(LoginRequiredMixin, ListView):
     model = Project
     template_name = "pages/home.html"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(author=self.request.user)
+        return queryset
 
 
 class AboutPageView(LoginRequiredMixin, TemplateView):
