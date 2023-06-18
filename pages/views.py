@@ -12,10 +12,11 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 
-from .models import Case, CaseLog, TrackedMetric
+from .models import Case, CaseLog, TrackedMetric, Project
 
 
-class HomePageView(TemplateView):
+class HomePageView(LoginRequiredMixin, ListView):
+    model = Project
     template_name = "pages/home.html"
 
 

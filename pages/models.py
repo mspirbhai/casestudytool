@@ -37,6 +37,7 @@ class TrackedMetric(BaseModel):
 class Project(BaseModel):
     name = models.CharField(max_length=200)
     tracked_metrics = models.ManyToManyField(TrackedMetric, blank=True)
+    author = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
 
     def __str__(self):
         return self.name
