@@ -7,7 +7,9 @@
 {% block content %}
   <h1>Show Details for Case log {{ caselog.case }} for Logged in User</h1>
   <h5>
-    <a href="{% url 'caselog_edit' caselog.pk %}">Edit case log</a>
+    <a class="btn btn-primary"
+       role="button"
+       href="{% url 'caselog_edit' caselog.pk %}">Edit Caselog</a>
   </h5>
   <div class="case-log-entry">
     <h2>{{ caselog.title }} written by {{ caselog.author }}</h2>

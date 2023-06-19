@@ -7,7 +7,9 @@
 {% block content %}
   <h1>Show all case logs for Logged in User</h1>
   <h5>
-    <a href="{% url 'caselog_new' view.kwargs.pk %}">New case log</a>
+    <a class="btn btn-primary"
+       role="button"
+       href="{% url 'caselog_new' view.kwargs.pk %}">New Caselog</a>
   </h5>
   <div class="list-group">
     {% for caselog in caselog_list %}
