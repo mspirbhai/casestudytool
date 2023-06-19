@@ -6,12 +6,14 @@
 {% endblock title %}
 {% block content %}
   <h1>Show All Projects For Logged In User</h1>
-  <h5>
-    <a href="{% url 'cases' %}">Case List</a>
-  </h5>
   <div class="list-group">
     {% for project in project_list %}
-      <p>{{ project.name }} is tracking</p>
+      <p>
+        <h5>
+          <a href="{% url 'cases' project.pk %}">{{ project.name }}</a>
+        </h5>
+        is tracking
+      </p>
       <p>metrics:</p>
       {% for metric in project.tracked_metrics.all %}<p>{{ metric }}</p>{% endfor %}
       <p>users:</p>

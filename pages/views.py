@@ -11,9 +11,10 @@ from django.views.generic import (
 )
 
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 from .models import Case, CaseLog, TrackedMetric, Project
+from .forms import CaseLogCreateForm
 
 
 class HomePageView(LoginRequiredMixin, ListView):
@@ -34,12 +35,20 @@ class CaseListView(LoginRequiredMixin, ListView):
     model = Case
     template_name = "pages/cases.html"
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(project=self.kwargs["pk"])
+        return queryset
+
 
 class CaseCreateView(LoginRequiredMixin, CreateView):
     model = Case
     template_name = "pages/cases_new.html"
     fields = ["name", "description", "project"]
-    success_url = reverse_lazy("cases")
+
+    def get_success_url(self):
+        project_id = self.object.project.id
+        return reverse_lazy("cases", kwargs={"pk": project_id})
 
 
 class CaseLogListView(LoginRequiredMixin, ListView):
@@ -59,10 +68,15 @@ class CaseLogDetailView(LoginRequiredMixin, DetailView):
 
 
 class CaseLogCreateView(LoginRequiredMixin, CreateView):
-    # form_class = CaseLogCreateForm
+    form_class = CaseLogCreateForm
     model = CaseLog
     template_name = "pages/caselog_new.html"
-    fields = ["title", "body", "tracked_value", "tracked_metric"]
+    # fields = ["title", "body", "tracked_value", "tracked_metric"]
+
+    def get_form_kwargs(self):
+        kw = super(CaseLogCreateView, self).get_form_kwargs()
+        kw["request"] = self.request
+        return kw
 
     def form_valid(self, form):
         form.instance.author = self.request.user
