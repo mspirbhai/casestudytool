@@ -6,20 +6,33 @@
 {% endblock title %}
 {% block content %}
   <h3>Show All Projects For Logged In User</h3>
-  <div class="accordion" id="accordionPanelsStayOpenExample">
+  <div class="accordion" id="accordionPanelsStayOpen">
     {% for project in project_list %}
       <div class="accordion-item">
-        <h2 class="accordion-header"
+        <h6 class="accordion-header"
             id="panelsStayOpen-heading{{ forloop.counter }}">
-          <button class="accordion-button"
+          <button class="accordion-button collapsed"
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#panelsStayOpen-collapse{{ forloop.counter }}"
-                  aria-expanded="true"
-                  aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">{{ project.name }} is tracking</button>
-        </h2>
+                  aria-expanded="false"
+                  aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">
+            Project name: {{ project.name }}
+          </button>
+          {% if project.case_target != 0 %}
+            &emsp;Case status: {{ project.case_set.count }} / {{ project.case_target }}
+            <div class="progress">
+              <div class="progress-bar"
+                   role="progressbar"
+                   style="width:{% widthratio project.case_set.count project.case_target 100 %}%"
+                   aria-valuenow="{% widthratio project.case_set.count project.case_target 100 %}"
+                   aria-valuemin="0"
+                   aria-valuemax="100"></div>
+            </div>
+          {% endif %}
+        </h6>
         <div id="panelsStayOpen-collapse{{ forloop.counter }}"
-             class="accordion-collapse collapse show"
+             class="accordion-collapse collapse"
              aria-labelledby="panelsStayOpen-heading{{ forloop.counter }}">
           <div class="accordion-body">
             <h5>
