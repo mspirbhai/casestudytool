@@ -14,7 +14,7 @@ from django.urls import reverse_lazy
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 from .models import Case, CaseLog, TrackedMetric, Project
-from .forms import CaseLogCreateForm
+from .forms import CaseLogCreateForm, CaseLogUpdateForm
 
 
 class HomePageView(LoginRequiredMixin, ListView):
@@ -74,8 +74,8 @@ class CaseLogCreateView(LoginRequiredMixin, CreateView):
     # fields = ["title", "body", "tracked_value", "tracked_metric"]
 
     def get_form_kwargs(self):
-        kw = super(CaseLogCreateView, self).get_form_kwargs()
-        kw["request"] = self.request
+        kw = super().get_form_kwargs()
+        kw["pk"] = self.kwargs["pk"]
         return kw
 
     def form_valid(self, form):
@@ -94,13 +94,19 @@ class CaseLogCreateView(LoginRequiredMixin, CreateView):
 
 
 class CaseLogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    form_class = CaseLogUpdateForm
     model = CaseLog
     template_name = "pages/caselog_edit.html"
-    fields = ["title", "body", "tracked_value", "tracked_metric"]
+    # fields = ["title", "body", "tracked_value", "tracked_metric"]
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
+
+    def get_form_kwargs(self):
+        kw = super().get_form_kwargs()
+        kw["pk"] = self.kwargs["pk"]
+        return kw
 
 
 class TrackedMetricDetailView(LoginRequiredMixin, DetailView):
