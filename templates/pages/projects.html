@@ -46,13 +46,12 @@
             <br>
             <br>
             <h6>Metrics across all cases:</h6>
-            {{ metrics|get_item:4 }}
             {% for key in metrics|get_item:project %}
               Metric name = {{ key.name|capfirst }}
               <br>
               Calculation = {{ key.get_calculation_display }}
               <br>
-              Value = {{ metrics|get_item:project|get_item:key }}
+              Value = {{ metrics|get_item:project|get_item:key|floatformat:'3' }}
               <br>
               <br>
             {% endfor %}

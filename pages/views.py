@@ -30,23 +30,25 @@ class ProjectListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(*args, **kwargs)
         projects = Project.objects.all()
         metrics = {}
-        count = 1
+
         for project in projects:
             metrics[project] = {}
             caselogs = CaseLog.objects.filter(case__project=project)
             for tracked in project.tracked_metrics.all():
-                metrics[count] = tracked.calculation
-                count += count + 1
+                total_sum = 0
+                total_mean = []
                 if tracked.calculation == "SUM":
-                    total_sum = 0
                     for caselog in caselogs:
-                        if caselog.tracked_value != None:
+                        if (caselog.tracked_value != None) and (
+                            caselog.tracked_metric.calculation == "SUM"
+                        ):
                             total_sum = total_sum + caselog.tracked_value
                     metrics[project] = metrics[project] | {tracked: total_sum}
                 elif tracked.calculation == "MEA":
-                    total_mean = []
                     for caselog in caselogs:
-                        if caselog.tracked_value != "None":
+                        if (caselog.tracked_value != "None") and (
+                            caselog.tracked_metric.calculation == "MEA"
+                        ):
                             total_mean.append(caselog.tracked_value)
                     if len(total_mean) != 0:
                         total_mean = sum(total_mean) / len(total_mean)
@@ -64,6 +66,11 @@ class CaseListView(LoginRequiredMixin, ListView):
     model = Case
     template_name = "pages/cases.html"
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["project"] = self.kwargs["pk"]
+        return context
+
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(project=self.kwargs["pk"])
@@ -73,7 +80,11 @@ class CaseListView(LoginRequiredMixin, ListView):
 class CaseCreateView(LoginRequiredMixin, CreateView):
     model = Case
     template_name = "pages/cases_new.html"
-    fields = ["name", "description", "project"]
+    fields = ["name", "description"]
+
+    def form_valid(self, form):
+        form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
+        return super().form_valid(form)
 
     def get_success_url(self):
         project_id = self.object.project.id
