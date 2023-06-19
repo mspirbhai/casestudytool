@@ -30,23 +30,27 @@ class ProjectListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(*args, **kwargs)
         projects = Project.objects.all()
         metrics = {}
+        count = 1
         for project in projects:
+            metrics[project] = {}
             caselogs = CaseLog.objects.filter(case__project=project)
             for tracked in project.tracked_metrics.all():
+                metrics[count] = tracked.calculation
+                count += count + 1
                 if tracked.calculation == "SUM":
-                    total = 0
+                    total_sum = 0
                     for caselog in caselogs:
                         if caselog.tracked_value != None:
-                            total = total + caselog.tracked_value
-                    metrics[project] = {tracked: total}
-                if tracked.calculation == "MEA":
-                    total = []
+                            total_sum = total_sum + caselog.tracked_value
+                    metrics[project] = metrics[project] | {tracked: total_sum}
+                elif tracked.calculation == "MEA":
+                    total_mean = []
                     for caselog in caselogs:
                         if caselog.tracked_value != "None":
-                            total.append(caselog.tracked_value)
-                    if len(total) != 0:
-                        total = sum(total) / len(total)
-                    metrics[project] = {tracked: total}
+                            total_mean.append(caselog.tracked_value)
+                    if len(total_mean) != 0:
+                        total_mean = sum(total_mean) / len(total_mean)
+                    metrics[project] = metrics[project] | {tracked: total_mean}
 
         context["metrics"] = metrics
         return context

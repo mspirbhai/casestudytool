@@ -1,5 +1,6 @@
 {% extends "_base.html" %}
 
+{% load custom_tags %}
 {% load static %}
 {% block title %}
   Project List
@@ -44,10 +45,17 @@
                role="button">View Cases</a>
             <br>
             <br>
-            <h6>Metrics:</h6>
-            {% for metric in project.tracked_metrics.all %}<p>{{ metric.name|capfirst }} is {{ metrics }}</p>{% endfor %}
-            <p>users:</p>
-            {% for author in project.author.all %}<p>{{ author }}</p>{% endfor %}
+            <h6>Metrics across all cases:</h6>
+            {{ metrics|get_item:4 }}
+            {% for key in metrics|get_item:project %}
+              Metric name = {{ key.name|capfirst }}
+              <br>
+              Calculation = {{ key.get_calculation_display }}
+              <br>
+              Value = {{ metrics|get_item:project|get_item:key }}
+              <br>
+              <br>
+            {% endfor %}
           </div>
         </div>
       </div>

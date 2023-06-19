@@ -13,7 +13,7 @@ class BaseModel(models.Model):
 
 
 class TrackedMetric(BaseModel):
-    class CALCULATION(models.TextChoices):
+    class CALC_TYPE(models.TextChoices):
         SUM = "SUM"
         MEAN = "MEA"
 
@@ -21,8 +21,7 @@ class TrackedMetric(BaseModel):
     explanation = models.CharField(max_length=500)
     calculation = models.CharField(
         max_length=3,
-        choices=CALCULATION.choices,
-        default=CALCULATION.SUM,
+        choices=CALC_TYPE.choices,
     )
 
     def __str__(self):

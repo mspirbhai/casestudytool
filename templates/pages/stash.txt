@@ -1,0 +1,5 @@
+{% for metric in project.tracked_metrics.all %}<p>{{ metric.name|capfirst }} is {{ metrics }}</p>{% endfor %}
+
+{% for key, value in metric %}{{ key }}, {{ value }}{% endfor %}
+
+{% for metric in  %}{{ key }}{% endfor %}
