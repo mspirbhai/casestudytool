@@ -15,9 +15,7 @@ class BaseModel(models.Model):
 class TrackedMetric(BaseModel):
     class CALCULATION(models.TextChoices):
         SUM = "SUM"
-        MEDIAN = "MED"
         MEAN = "MEA"
-        MODE = "MOD"
 
     name = models.CharField(max_length=200)
     explanation = models.CharField(max_length=500)

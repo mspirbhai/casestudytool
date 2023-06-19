@@ -26,6 +26,31 @@ class ProjectListView(LoginRequiredMixin, ListView):
         queryset = queryset.filter(author=self.request.user)
         return queryset
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        projects = Project.objects.all()
+        metrics = {}
+        for project in projects:
+            caselogs = CaseLog.objects.filter(case__project=project)
+            for tracked in project.tracked_metrics.all():
+                if tracked.calculation == "SUM":
+                    total = 0
+                    for caselog in caselogs:
+                        if caselog.tracked_value != None:
+                            total = total + caselog.tracked_value
+                    metrics[project] = {tracked: total}
+                if tracked.calculation == "MEA":
+                    total = []
+                    for caselog in caselogs:
+                        if caselog.tracked_value != "None":
+                            total.append(caselog.tracked_value)
+                    if len(total) != 0:
+                        total = sum(total) / len(total)
+                    metrics[project] = {tracked: total}
+
+        context["metrics"] = metrics
+        return context
+
 
 class AboutPageView(LoginRequiredMixin, TemplateView):
     template_name = "pages/about.html"

@@ -19,8 +19,11 @@
                   aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">
             Project name: {{ project.name }}
           </button>
-          {% if project.case_target != 0 %}
+          {% if project.case_target > 0 %}
+            <br>
             &emsp;Case status: {{ project.case_set.count }} / {{ project.case_target }}
+            <br>
+            <br>
             <div class="progress">
               <div class="progress-bar"
                    role="progressbar"
@@ -29,17 +32,20 @@
                    aria-valuemin="0"
                    aria-valuemax="100"></div>
             </div>
+            <br>
           {% endif %}
         </h6>
         <div id="panelsStayOpen-collapse{{ forloop.counter }}"
              class="accordion-collapse collapse"
              aria-labelledby="panelsStayOpen-heading{{ forloop.counter }}">
           <div class="accordion-body">
-            <h5>
-              <a href="{% url 'cases' project.pk %}">{{ project.name }}</a>
-            </h5>
-            <p>metrics:</p>
-            {% for metric in project.tracked_metrics.all %}<p>{{ metric }}</p>{% endfor %}
+            <a class="btn btn-primary"
+               href="{% url 'cases' project.pk %}"
+               role="button">View Cases</a>
+            <br>
+            <br>
+            <h6>Metrics:</h6>
+            {% for metric in project.tracked_metrics.all %}<p>{{ metric.name|capfirst }} is {{ metrics }}</p>{% endfor %}
             <p>users:</p>
             {% for author in project.author.all %}<p>{{ author }}</p>{% endfor %}
           </div>
