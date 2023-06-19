@@ -17,9 +17,9 @@ from .models import Case, CaseLog, TrackedMetric, Project
 from .forms import CaseLogCreateForm, CaseLogUpdateForm
 
 
-class HomePageView(LoginRequiredMixin, ListView):
+class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
-    template_name = "pages/home.html"
+    template_name = "pages/projects.html"
 
     def get_queryset(self):
         queryset = super().get_queryset()

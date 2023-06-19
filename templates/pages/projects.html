@@ -5,7 +5,7 @@
   Project List
 {% endblock title %}
 {% block content %}
-  <h1>Show All Projects For Logged In User</h1>
+  <h3>Show All Projects For Logged In User</h3>
   <div class="accordion" id="accordionPanelsStayOpenExample">
     {% for project in project_list %}
       <div class="accordion-item">
@@ -16,22 +16,19 @@
                   data-bs-toggle="collapse"
                   data-bs-target="#panelsStayOpen-collapse{{ forloop.counter }}"
                   aria-expanded="true"
-                  aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">
-            <h5>
-              <a href="{% url 'cases' project.pk %}">{{ project.name }}</a>
-            </h5>
-            is tracking
-            <p>metrics:</p>
-            {% for metric in project.tracked_metrics.all %}<p>{{ metric }}</p>{% endfor %}
-            <p>users:</p>
-            {% for author in project.author.all %}<p>{{ author }}</p>{% endfor %}
-          </button>
+                  aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">{{ project.name }} is tracking</button>
         </h2>
         <div id="panelsStayOpen-collapse{{ forloop.counter }}"
              class="accordion-collapse collapse show"
              aria-labelledby="panelsStayOpen-heading{{ forloop.counter }}">
           <div class="accordion-body">
-            <strong>This is the {{ forloop.counter }} item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            <h5>
+              <a href="{% url 'cases' project.pk %}">{{ project.name }}</a>
+            </h5>
+            <p>metrics:</p>
+            {% for metric in project.tracked_metrics.all %}<p>{{ metric }}</p>{% endfor %}
+            <p>users:</p>
+            {% for author in project.author.all %}<p>{{ author }}</p>{% endfor %}
           </div>
         </div>
       </div>
