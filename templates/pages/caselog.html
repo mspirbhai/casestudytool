@@ -5,21 +5,29 @@
   Case Logs
 {% endblock title %}
 {% block content %}
-  <h1>Show all case logs for Logged in User</h1>
-  <h5>
-    <a class="btn btn-primary"
-       role="button"
-       href="{% url 'caselog_new' view.kwargs.pk %}">New Caselog</a>
-  </h5>
+  <h1 class="display-5 link-body-emphasis mb-1">Show All Caselogs for Case: {{ case.name }}</h1>
+  <hr>
+  <a class="btn btn-primary"
+     role="button"
+     href="{% url 'cases' case.project.pk %}">Back</a>
+  <a class="btn btn-primary"
+     role="button"
+     href="{% url 'caselog_new' view.kwargs.pk %}">New Caselog</a>
+  <hr>
   <div class="list-group">
     {% for caselog in caselog_list %}
       <a href="{% url 'caselog_detail' caselog.pk %}"
          class="list-group-item list-group-item-action"
          aria-current="true">
         <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1">{{ caselog.title }}</h5>
+          <h3 class="display-6 link-body-emphasis mb-1">{{ caselog.title }}</h3>
         </div>
-        <p class="mb-1">from {{ caselog.case }} created at {{ caselog.created_at }}</p>
+        <p class="mb-1">by {{ caselog.author }} created at {{ caselog.created_at|date:"D d M Y" }}</p>
+        {% if caselog.tracked_value > 0 %}
+          <p>
+            Metrics: {{ caselog.tracked_metric.name }}: {{ caselog.tracked_value|floatformat:"-3" }}{{ caselog.tracked_metric.units }}
+          </p>
+        {% endif %}
       </a>
     {% endfor %}
   </div>

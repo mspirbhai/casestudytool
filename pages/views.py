@@ -10,6 +10,8 @@ from django.views.generic import (
     UpdateView,
 )
 
+import datetime
+
 from django.urls import reverse_lazy
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
@@ -58,8 +60,13 @@ class ProjectListView(LoginRequiredMixin, ListView):
         return context
 
 
-class AboutPageView(LoginRequiredMixin, TemplateView):
+class AboutPageView(TemplateView):
     template_name = "pages/about.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["date"] = datetime.date(2023, 6, 20)
+        return context
 
 
 class CaseListView(LoginRequiredMixin, ListView):
@@ -68,7 +75,7 @@ class CaseListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["project"] = self.kwargs["pk"]
+        context["project"] = Project.objects.get(pk=self.kwargs["pk"])
         return context
 
     def get_queryset(self):
@@ -93,6 +100,12 @@ class CaseCreateView(LoginRequiredMixin, CreateView):
 
 class CaseLogListView(LoginRequiredMixin, ListView):
     model = CaseLog
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # context["project"] = Case.objects.get(pk=self.kwargs["pk"]).project
+        context["case"] = Case.objects.get(pk=self.kwargs["pk"])
+        return context
 
     def get_queryset(self):
         queryset = super().get_queryset()

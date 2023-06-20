@@ -5,14 +5,23 @@
   Case Log Detail
 {% endblock title %}
 {% block content %}
-  <h1>Show Details for Case log {{ caselog.case }} for Logged in User</h1>
-  <h5>
+  <article class="blog-post">
+    <h2 class="display-5 link-body-emphasis mb-1">{{ caselog.title }}</h2>
+    <p class="blog-post-meta">{{ caselog.created_at|date:"D d M Y" }} by {{ caselog.author }}</p>
+    <hr>
     <a class="btn btn-primary"
        role="button"
-       href="{% url 'caselog_edit' caselog.pk %}">Edit Caselog</a>
-  </h5>
-  <div class="case-log-entry">
-    <h2>{{ caselog.title }} written by {{ caselog.author }}</h2>
+       href="{% url 'caselogs' caselog.case.pk %}">Back</a>
+    <a class="btn btn-primary"
+       role="button"
+       href="{% url 'caselog_edit' caselog.pk %}">Edit</a>
+    <hr>
+    <h6>Caselog Data:</h6>
     <p>{{ caselog.body }}</p>
-  </div>
+    {% if caselog.tracked_value > 0 %}
+      <h6>Metrics:</h6>
+      <p>{{ caselog.tracked_metric.get_calculation_display }}ed {{ caselog.tracked_metric.name }}:</p>
+      <p>{{ caselog.tracked_value|floatformat:"-3" }}{{ caselog.tracked_metric.units }}</p>
+    {% endif %}
+  </article>
 {% endblock content %}
