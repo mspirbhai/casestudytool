@@ -9,6 +9,7 @@ staticfiles/
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+.vscode/
 
 # Django #
 *.log
