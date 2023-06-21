@@ -18,3 +18,4 @@ media
 
 # Virtual environment
 .venv
+.coverage

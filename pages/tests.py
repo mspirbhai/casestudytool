@@ -1,40 +1,93 @@
+from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from pages.models import Case, CaseLog, Project, TrackedMetric
+
 from pages.forms import CaseLogCreateForm
+from pages.models import Case, CaseLog, Project, TrackedMetric
 from pages.views import CaseLogCreateView
 
 
 class HomepageTests(SimpleTestCase):
     def test_url_exists_at_correct_location(self):
+        # Test if the root URL returns a 200 status code
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
+
+        # Test if a non-existent URL returns a 404 status code
+        response = self.client.get("/nonexistent")
+        self.assertEqual(response.status_code, 404)
+
+        # Test if a URL with an incorrect method returns a 405 status code
+        response = self.client.post("/")
+        self.assertEqual(response.status_code, 405)
 
     def test_url_available_by_name(self):
         response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "pages/home.html")
-        
+        self.assertTemplateUsed(response, "pages/about.html")
 
 
-class AboutpageTests(TestCase):
+class ProjectTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(
             username="Mustafa", email="mustafa@dev.io", password="some_pass"
         )
+        cls.url = reverse("projects")
+        cls.tracked_metric_1 = TrackedMetric.objects.create(
+            name="Test Metric",
+            explanation="Descripton",
+            calculation="SUM",
+            units="Units",
+        )
+        cls.tracked_metric_2 = TrackedMetric.objects.create(
+            name="Test Metric 2",
+            explanation="Descripton",
+            calculation="MEA",
+            units="Units",
+        )
+        cls.project1 = Project.objects.create(name="Project 1", case_target=2)
+        cls.project2 = Project.objects.create(name="Project 2")
+        cls.project1.author.set([cls.user])
+        cls.project1.tracked_metrics.set([cls.tracked_metric_1, cls.tracked_metric_2])
+        cls.case = Case.objects.create(
+            name="Test Case",
+            description="Descripton",
+            project=Project.objects.get(name="Project 1"),
+        )
+        cls.caselog = CaseLog.objects.create(
+            case=Case.objects.get(name="Test Case"),
+            tracked_value=10,
+            tracked_metric=TrackedMetric.objects.get(name="Test Metric"),
+            author=cls.user,
+        )
+        cls.caselog = CaseLog.objects.create(
+            case=Case.objects.get(name="Test Case"),
+            tracked_value=10,
+            tracked_metric=TrackedMetric.objects.get(name="Test Metric 2"),
+            author=cls.user,
+        )
+        cls.caselog = CaseLog.objects.create(
+            case=Case.objects.get(name="Test Case"),
+            tracked_value=20,
+            tracked_metric=TrackedMetric.objects.get(name="Test Metric 2"),
+            author=cls.user,
+        )
 
-    def test_url_exists_at_correct_location_and_redirects_to_login(self):
-        response = self.client.get("/about/")
-        self.assertEqual(response.status_code, 302)
-
-    def test_about_logged_in(self):
+    def test_project_list_view(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("about"))
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "pages/about.html")
-        self.assertContains(response, "<h1>About page</h1>")
+        self.assertTemplateUsed(response, "pages/projects.html")
+        self.assertContains(response, self.project1.name)
+        self.assertContains(response, "Case status: 1 / 2")
+        self.assertContains(response, "Metric name = Test Metric")
+        self.assertContains(response, "Calculation = Sum")
+        self.assertContains(response, "Value = 10Units")
+        self.assertContains(response, "Metric name = Test Metric 2")
+        self.assertContains(response, "Calculation = Mean")
+        self.assertContains(response, "Value = 15Units")
+        self.assertNotContains(response, self.project2.name)
 
 
 class CasepageTests(TestCase):
@@ -43,40 +96,90 @@ class CasepageTests(TestCase):
         cls.user = get_user_model().objects.create_user(
             username="Mustafa", email="mustafa@dev.io", password="some_pass"
         )
-        cls.project = Project.objects.create(name="Test Project")
+        cls.tracked_metric_1 = TrackedMetric.objects.create(
+            name="Test Metric",
+            explanation="Descripton",
+            calculation="SUM",
+            units="Units",
+        )
+        cls.tracked_metric_2 = TrackedMetric.objects.create(
+            name="Test Metric 2",
+            explanation="Descripton",
+            calculation="MEA",
+            units="Units",
+        )
+        cls.project1 = Project.objects.create(name="Project 1", case_target=2)
+        cls.project2 = Project.objects.create(name="Project 2")
+        cls.project1.author.set([cls.user])
+        cls.project1.tracked_metrics.set([cls.tracked_metric_1, cls.tracked_metric_2])
         cls.case = Case.objects.create(
             name="Test Case",
             description="Descripton",
-            project=Project.objects.get(name="Test Project"),
+            project=Project.objects.get(name="Project 1"),
+        )
+        cls.case_2 = Case.objects.create(
+            name="Test Case 2",
+            description="Descripton",
+            project=Project.objects.get(name="Project 2"),
+        )
+        cls.caselog = CaseLog.objects.create(
+            title="Test CaseLog 1",
+            case=Case.objects.get(name="Test Case"),
+            tracked_value=10,
+            tracked_metric=TrackedMetric.objects.get(name="Test Metric"),
+            author=cls.user,
+        )
+        cls.caselog = CaseLog.objects.create(
+            title="Test CaseLog 2",
+            case=Case.objects.get(name="Test Case"),
+            tracked_value=10,
+            tracked_metric=TrackedMetric.objects.get(name="Test Metric 2"),
+            author=cls.user,
+        )
+        cls.caselog = CaseLog.objects.create(
+            title="Test CaseLog 3",
+            case=Case.objects.get(name="Test Case 2"),
+            tracked_value=20,
+            tracked_metric=TrackedMetric.objects.get(name="Test Metric 2"),
+            author=cls.user,
         )
 
-    def test_url_exists_at_correct_location_and_redirects_to_login(self):
-        response = self.client.get("/cases/")
-        self.assertEqual(response.status_code, 302)
-
     def test_cases_url_exists_at_correct_location_and_redirects_to_login(self):
-        response = self.client.get("/cases/1/")
+        response = self.client.get("/cases/" + str(self.project1.pk) + "/")
         self.assertEqual(response.status_code, 302)
 
     def test_cases_logged_in(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("cases"))
+        response = self.client.get(reverse("cases", kwargs={"pk": self.project1.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "pages/cases.html")
-        self.assertContains(response, "<h1>Show All Cases For Logged In User</h1>")
-        self.assertContains(response, '<h5 class="mb-1">Test Case</h5>')
+        self.assertContains(response, "Show All Cases For Project: Project 1")
+        self.assertContains(response, 'href="/projects/">Back')
+        self.assertContains(
+            response, 'href="/cases/' + str(self.project1.pk) + '/new/">New Case'
+        )
+        self.assertContains(response, "Test Case")
+        self.assertNotContains(response, "Test Case 2")
+        self.assertContains(response, 'href="/caselog/' + str(self.case.pk) + '/"')
+        self.assertContains(response, "Test CaseLog 1")
+        self.assertContains(response, "Test CaseLog 2")
+        self.assertNotContains(response, "Test CaseLog 3")
 
     def test_case_creation(self):
         self.client.force_login(self.user)
         data = {
-            "name": "Test Case 2",
+            "name": "Test Case 5",
             "description": "This is a test case.",
-            "project": self.project.pk,
+            "project": self.project1.pk,
         }
-        response = self.client.post(reverse("cases_new"), data=data)
+        response = self.client.post(
+            reverse("cases_new", kwargs={"pk": self.project1.pk}), data=data
+        )
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse("cases"))
-        self.assertEqual(Case.objects.last().name, "Test Case 2")
+        self.assertRedirects(
+            response, reverse("cases", kwargs={"pk": self.project1.pk})
+        )
+        self.assertEqual(Case.objects.last().name, "Test Case 5")
         self.assertEqual(Case.objects.last().description, "This is a test case.")
 
 
@@ -99,35 +202,45 @@ class CaseLogsPageTests(TestCase):
             body="Test Case Log 1 Body Text",
         )
 
-    def setUp(self):
-        pass
-
-    def test_caselog_list_with_pk_1_logged_in(self):
+    def test_caselog_list_logged_in(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse("caselogs", kwargs={"pk": 1}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "pages/caselog.html")
-        self.assertContains(response, "<h1>Show all case logs for Logged in User</h1>")
-        self.assertContains(response, '<h5 class="mb-1">Test Case Log 1</h5>')
+        self.assertContains(response, "Show All Caselogs for Case: Test Case")
+        self.assertContains(
+            response, 'href="/cases/' + str(self.project.pk) + '/">Back'
+        )
+        self.assertContains(
+            response, 'href="/caselog/new/' + str(self.case.pk) + '/">New Case'
+        )
+        self.assertContains(
+            response, 'href="/caselog_detail/' + str(self.caselog.pk) + '/"'
+        )
+        self.assertContains(
+            response,
+            '<h3 class="display-6 link-body-emphasis mb-1">'
+            + self.caselog.title
+            + "</h3>",
+        )
 
     def test_caselogs_url_exists_at_correct_location_and_redirects_to_login(self):
         caselog_url = "/caselog/" + str(self.caselog.pk) + "/"
         response = self.client.get(caselog_url)
         self.assertEqual(response.status_code, 302)
 
-    def test_caselog_detail_with_pk_cls_caselog_logged_in(self):
+    def test_caselog_detail_caselog_logged_in(self):
         self.client.force_login(self.user)
         response = self.client.get(
             reverse("caselog_detail", kwargs={"pk": self.caselog.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "pages/caselog_detail.html")
+        self.assertContains(response, 'href="/caselog/' + str(self.case.pk) + '/">Back')
         self.assertContains(
-            response, "<h1>Show Details for Case log Test Case for Logged in User</h1>"
+            response, 'href="/caselog/edit/' + str(self.caselog.pk) + '/">Edit'
         )
-        self.assertContains(
-            response, "<h2>Test Case Log 1 written by mustafa@dev.io</h2>"
-        )
+        self.assertContains(response, self.caselog.title)
 
     def test_caselog_create(self):
         self.client.force_login(self.user)
