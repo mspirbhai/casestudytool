@@ -22,6 +22,57 @@
         </div>
         <p class="mb-1">{{ case.description }}</p>
       </a>
+      <div class="accordion" id="accordionPanelsStayOpen">
+        <div class="accordion-item">
+          <h6 class="accordion-header"
+              id="panelsStayOpen-heading{{ forloop.counter }}">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#panelsStayOpen-collapse{{ forloop.counter }}"
+                    aria-expanded="false"
+                    aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">
+              <h6 class="text-muted mb-1">Details:</h6>
+            </button>
+          </h6>
+          <div id="panelsStayOpen-collapse{{ forloop.counter }}"
+               class="accordion-collapse collapse"
+               aria-labelledby="panelsStayOpen-heading{{ forloop.counter }}">
+            <div class="accordion-body">
+              <a class="btn btn-primary"
+                 href="{% url 'caselogs' case.pk %}"
+                 role="button">View Caselogs</a>
+              <hr>
+              <table class="table table-sm  table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Body</th>
+                    <th scope="col">Tracked Value</th>
+                    <th scope="col">Tracked Metric</th>
+                  </tr>
+                </thead>
+                {% for caselog in caselogs %}
+                  {% if caselog.case_id == case.id %}
+                    <tbody>
+                      <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ caselog.title }}</td>
+                        <td>{{ caselog.author }}</td>
+                        <td>{{ caselog.body }}</td>
+                        <td>{{ caselog.tracked_metric.name }}</td>
+                        <td>{{ caselog.tracked_value|floatformat:"-3" }}{{ caselog.tracked_metric.units }}</td>
+                      </tr>
+                    </tbody>
+                  {% endif %}
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endfor %}
   </div>
 {% endblock content %}

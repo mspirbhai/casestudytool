@@ -48,7 +48,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
                     metrics[project] = metrics[project] | {tracked: total_sum}
                 elif tracked.calculation == "MEA":
                     for caselog in caselogs:
-                        if (caselog.tracked_value != "None") and (
+                        if (caselog.tracked_value != None) and (
                             caselog.tracked_metric.calculation == "MEA"
                         ):
                             total_mean.append(caselog.tracked_value)
@@ -73,15 +73,19 @@ class CaseListView(LoginRequiredMixin, ListView):
     model = Case
     template_name = "pages/cases.html"
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context["project"] = Project.objects.get(pk=self.kwargs["pk"])
-        return context
-
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(project=self.kwargs["pk"])
         return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        queryset = self.get_queryset()
+        context = super().get_context_data(*args, **kwargs)
+        context["project"] = Project.objects.get(pk=self.kwargs["pk"])
+        context["caselogs"] = CaseLog.objects.filter(
+            case_id__in=queryset.values_list("pk")
+        )
+        return context
 
 
 class CaseCreateView(LoginRequiredMixin, CreateView):
