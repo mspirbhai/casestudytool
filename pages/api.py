@@ -74,7 +74,7 @@ class CaseLogSchema(ModelSchema):
     def resolve_tracked_metric_calculation(obj):
         if obj.tracked_metric is None:
             return ""
-        return obj.tracked_metric.calculation
+        return obj.tracked_metric.get_calculation_display()
 
     @staticmethod
     def resolve_tracked_metric_units(obj):
