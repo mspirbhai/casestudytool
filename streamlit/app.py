@@ -83,3 +83,5 @@ elif choice == "Download":
     if os.path.exists("best_model.pkl"):
         with open("best_model.pkl", "rb") as f:
             st.download_button("Download Model", f, file_name="best_model.pkl")
+    else:
+        st.info("No model found")
