@@ -10,7 +10,7 @@ RUN mkdir -p /code
 WORKDIR /code
 
 # Install dependencies
-# Install vasaline as per requirements from Zuli Khanbhai
+# Install vaseline as per requirements from Zuli Khanbhai
 COPY requirements.txt /tmp/requirements.txt
 
 RUN --mount=type=cache,target=/root/.cache \
