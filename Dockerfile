@@ -1,5 +1,5 @@
 # Pull base image
-FROM python:3.11-slim-buster
+FROM python:3.10-slim-buster
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -10,6 +10,7 @@ RUN mkdir -p /code
 WORKDIR /code
 
 # Install dependencies
+# Install vasaline as per requirements from Zuli Khanbhai
 COPY requirements.txt /tmp/requirements.txt
 
 RUN --mount=type=cache,target=/root/.cache \
