@@ -57,7 +57,10 @@ elif choice == "Data Collection":
         data = json.loads(response.text)
         df = pd.json_normalize(data)
         df.to_csv("staticfiles/caselogs.csv", index=None)
-    st.data_editor(df)
+    st.info(
+        "To add a row scroll to the bottom, to delete a row, select one or more rows and press delete"
+    )
+    st.data_editor(df, num_rows="dynamic")
 elif choice == "Profiling":
     st.title("Exploratory Data Analysis on Caselogs")
     profile_report = ydata_profiling.ProfileReport(df)

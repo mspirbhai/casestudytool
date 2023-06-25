@@ -10,6 +10,7 @@ from .views import (
     CaseCreateView,
     TrackedMetricDetailView,
     ProjectListView,
+    StreamlitPageView,
 )
 
 from .api import api
@@ -18,6 +19,7 @@ urlpatterns = [
     path("", AboutPageView.as_view(), name="home"),
     path("api/", api.urls),
     path("projects/", ProjectListView.as_view(), name="projects"),
+    path("streamlit", StreamlitPageView.as_view(), name="streamlit"),
     path("cases/<int:pk>/", CaseListView.as_view(), name="cases"),
     path("cases/<int:pk>/new/", CaseCreateView.as_view(), name="cases_new"),
     path("caselog/<int:pk>/", CaseLogListView.as_view(), name="caselogs"),

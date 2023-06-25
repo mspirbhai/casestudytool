@@ -60,6 +60,15 @@ class ProjectListView(LoginRequiredMixin, ListView):
         return context
 
 
+class StreamlitPageView(LoginRequiredMixin, TemplateView):
+    template_name = "pages/streamlit.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["streamlit"] = "http://localhost:8501"
+        return context
+
+
 class AboutPageView(TemplateView):
     template_name = "pages/about.html"
 

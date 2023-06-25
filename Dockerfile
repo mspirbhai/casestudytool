@@ -18,6 +18,11 @@ RUN --mount=type=cache,target=/root/.cache \
     pip install --upgrade pip && \
     pip install -r /tmp/requirements.txt
 
+RUN apt update 
+RUN apt install -y --no-install-recommends apt-utils
+RUN apt -y install curl 
+RUN apt -y install libgomp1 
+
 # Copy local project
 COPY . /code/
 
