@@ -21,6 +21,8 @@ RUN --mount=type=cache,target=/root/.cache \
 # Copy local project
 COPY . /code/
 
+RUN chmod a+x run.sh
+
 # Expose port 8000 8501
 EXPOSE 8000 8501
 
