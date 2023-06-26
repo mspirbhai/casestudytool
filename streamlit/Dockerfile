@@ -24,8 +24,7 @@ COPY . /code
 
 ENV DJANGO_SECRET_KEY "aN2lzZRtgGHAnQ40BeglAzbfKYLDaJluN3Gm994qPzsIYvD33L"
 ENV DJANGO_DEBUG="False"
-RUN python manage.py collectstatic --noinput
 
-EXPOSE 8000
+EXPOSE 8501
 
 CMD ["./run.sh"]

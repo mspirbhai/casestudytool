@@ -5,31 +5,54 @@ import pandas as pd
 import os
 import textwrap
 
+import streamlit.components.v1 as components
 
 # Import Profiling Capability
-import ydata_profiling
+from ydata_profiling import ProfileReport
 from streamlit_pandas_profiling import st_profile_report
+
+import sweetviz as sv
+import codecs
 
 # Machine Learning Tools
 from pycaret.regression import setup, compare_models, pull, save_model
 
+st.set_page_config(page_title="ML Page", page_icon="staticfiles/streamlit/favicon2.ico")
+
 with st.sidebar:
-    st.image("staticfiles/images/logo.png")
+    st.image("staticfiles/streamlit/logo.png")
     st.title("Casestudy ML App")
     choice = st.radio(
         "Navigation",
         [
             "About",
             "Data Collection",
-            "Profiling",
+            "Profiling - Pandas Profiling",
+            "Profiling - Sweetviz",
             "Machine Learning",
             "Download",
         ],
     )
     st.info("Application to enable building ML pipeline with the casestudy data")
 
-if os.path.exists("staticfiles/caselogs.csv"):
-    df = pd.read_csv("staticfiles/caselogs.csv", index_col=None)
+
+@st.cache_data
+def load_data():
+    if os.path.exists("staticfiles/streamlit/caselogs.csv"):
+        df = pd.read_csv("staticfiles/streamlit/caselogs.csv", index_col=None)
+        return df
+    else:
+        return None
+
+
+df = load_data()
+
+
+@st.cache_resource
+def st_display_sweetviz(report_html, width=900, height=600):
+    report_file = codecs.open(report_html, "r")
+    report = report_file.read()
+    components.html(report, width=width, scrolling=True, height=height)
 
 
 if choice == "About":
@@ -56,20 +79,44 @@ elif choice == "Data Collection":
         response = requests.get("https://casestudytool.fly.dev/api/caselogs")
         data = json.loads(response.text)
         df = pd.json_normalize(data)
-        df.to_csv("staticfiles/caselogs.csv", index=None)
+        df.to_csv("staticfiles/streamlit/caselogs.csv", index=None)
     st.info(
         "To add a row scroll to the bottom, to delete a row, select one or more rows and press delete"
     )
     st.data_editor(df, num_rows="dynamic")
-elif choice == "Profiling":
+elif choice == "Profiling - Pandas Profiling":
     st.title("Exploratory Data Analysis on Caselogs")
-    profile_report = ydata_profiling.ProfileReport(df)
-    st_profile_report(profile_report, key="store")
+    go_button = st.button("Go")
+
+    @st.cache_resource(experimental_allow_widgets=True)
+    def make_profile_report(df):
+        ProfileReport(df).to_file("staticfiles/streamlit/profile_report.html")
+        return True
+
+    if go_button:
+        if os.path.exists("staticfiles/streamlit/profile_report.html"):
+            st_display_sweetviz("staticfiles/streamlit/profile_report.html")
+        else:
+            make_profile_report(df)
+            st_display_sweetviz("staticfiles/streamlit/profile_report.html")
+
+elif choice == "Profiling - Sweetviz":
+    st.title("Exploratory Data Analysis on Caselogs")
+    go_button = st.button("Go")
+
+    if go_button:
+        if os.path.exists("staticfiles/streamlit/report.html"):
+            st_display_sweetviz("staticfiles/streamlit/report.html")
+        else:
+            sv.analyze(df).show_html("staticfiles/streamlit/report.html")
+            st_display_sweetviz("staticfiles/streamlit/report.html")
 elif choice == "Machine Learning":
     st.title("Machine Learning for Casestudy Caselogs")
     target = st.selectbox("Target", df.columns)
     go_button = st.button("Go")
-    if go_button:
+
+    @st.cache_resource
+    def machine_learning_find_best_model(df, target):
         df = df.dropna(subset=[target])
         setup(df, target=target, verbose=False)
         setup_df = pull()
@@ -80,11 +127,14 @@ elif choice == "Machine Learning":
         st.info("This is the best model found")
         st.dataframe(compare_df)
         best_model
-        save_model(best_model, "best_model")
+        save_model(best_model, "staticfiles/streamlit/best_model")
+
+    if go_button:
+        machine_learning_find_best_model(df, target)
 elif choice == "Download":
     st.title("Download the best model calculated")
-    if os.path.exists("best_model.pkl"):
-        with open("best_model.pkl", "rb") as f:
-            st.download_button("Download Model", f, file_name="best_model.pkl")
+    if os.path.exists("staticfiles/streamlit/best_model.pkl"):
+        with open("staticfiles/streamlit/best_model.pkl", "rb") as f:
+            st.download_button("Download Model", f, file_name="best_model")
     else:
         st.info("No model found")

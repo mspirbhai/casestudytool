@@ -1,12 +1,12 @@
 {% extends "_base.html" %}
 
 {% block title %}
-    Streamlit page
+    Datascience Page
 {% endblock title %}
 {% block content %}
     <iframe width="100%"
             height="1000"
-            src="{{ streamlit|safe }}"
+            src="{{ streamlit_url|safe }}"
             frameborder="1"
             allow="autoplay; encrypted-media"
             allowfullscreen
