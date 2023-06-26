@@ -6,9 +6,6 @@ __pycache__/
 staticfiles/
 *.py[cod]
 *$py.class
-**/migrations/**
-!**/migrations
-!**/migrations/__init__.py
 .vscode/
 
 # Django #

@@ -53,7 +53,7 @@ elif choice == "Data Collection":
     st.title("Data Collection - API call to get and store all Caselogs")
     refresh_button = st.button("Refresh")
     if refresh_button:
-        response = requests.get("http://localhost:8000/api/caselogs")
+        response = requests.get("https://casestudytool.fly.dev/api/caselogs")
         data = json.loads(response.text)
         df = pd.json_normalize(data)
         df.to_csv("staticfiles/caselogs.csv", index=None)

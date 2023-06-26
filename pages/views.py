@@ -65,7 +65,7 @@ class StreamlitPageView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["streamlit"] = "http://localhost:8501"
+        context["streamlit"] = "https://casestudytool.fly.dev:8501"
         return context
 
 

@@ -28,4 +28,4 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000 8501
 
-CMD ["gunicorn", "--bind", ":8000", "--workers", "2", "django_project.wsgi"]
+CMD ["./run.sh"]

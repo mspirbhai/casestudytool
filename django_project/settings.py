@@ -21,6 +21,13 @@ DEBUG = env.bool("DJANGO_DEBUG")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["casestudytool.fly.dev", "localhost", "0.0.0.0", "127.0.0.1"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://casestudytool.fly.dev",
+    "http://localhost",
+    "http://0.0.0.0",
+    "http://127.0.0.1",
+]
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = [
     "django.contrib.admin",
