@@ -14,7 +14,7 @@ from streamlit_pandas_profiling import st_profile_report
 from pycaret.regression import setup, compare_models, pull, save_model
 
 with st.sidebar:
-    st.image("staticfiles/images/Logo.png")
+    st.image("staticfiles/images/logo.png")
     st.title("Casestudy ML App")
     choice = st.radio(
         "Navigation",
