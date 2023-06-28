@@ -26,6 +26,7 @@ PyJWT==2.6.0
 python3-openid==3.2.0
 requests==2.30.0
 requests-oauthlib==1.3.1
+ruff
 sqlparse==0.4.3
 typing_extensions==4.5.0
 urllib3==2.0.2

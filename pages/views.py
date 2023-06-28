@@ -1,22 +1,17 @@
-from typing import Any, Optional, Type
+import datetime
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models.query import QuerySet
-from django.forms.models import BaseModelForm
+from django.urls import reverse_lazy
 from django.views.generic import (
+    CreateView,
     DetailView,
     ListView,
     TemplateView,
-    CreateView,
     UpdateView,
 )
 
-import datetime
-
-from django.urls import reverse_lazy
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-
-from .models import Case, CaseLog, TrackedMetric, Project
 from .forms import CaseLogCreateForm, CaseLogUpdateForm
+from .models import Case, CaseLog, Project, TrackedMetric
 
 
 class ProjectListView(LoginRequiredMixin, ListView):
@@ -41,14 +36,14 @@ class ProjectListView(LoginRequiredMixin, ListView):
                 total_mean = []
                 if tracked.calculation == "SUM":
                     for caselog in caselogs:
-                        if (caselog.tracked_value != None) and (
+                        if (caselog.tracked_value is not None) and (
                             caselog.tracked_metric.calculation == "SUM"
                         ):
                             total_sum = total_sum + caselog.tracked_value
                     metrics[project] = metrics[project] | {tracked: total_sum}
                 elif tracked.calculation == "MEA":
                     for caselog in caselogs:
-                        if (caselog.tracked_value != None) and (
+                        if (caselog.tracked_value is not None) and (
                             caselog.tracked_metric.calculation == "MEA"
                         ):
                             total_mean.append(caselog.tracked_value)

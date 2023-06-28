@@ -1,17 +1,16 @@
 import random
 
-from django.db import transaction
-from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
 
-from ...models import TrackedMetric, Project, Case, CaseLog
 from ...factories import (
-    UserFactory,
-    TrackedMetricFactory,
-    ProjectFactory,
     CaseFactory,
     CaseLogFactory,
+    ProjectFactory,
+    TrackedMetricFactory,
+    UserFactory,
 )
+from ...models import Case, CaseLog, Project, TrackedMetric
 
 User = get_user_model()
 

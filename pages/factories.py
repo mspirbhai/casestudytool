@@ -1,9 +1,8 @@
 import factory
+from django.contrib.auth import get_user_model
 from factory.django import DjangoModelFactory
 
-from .models import TrackedMetric, Project, Case, CaseLog
-from django.conf import settings
-from django.contrib.auth import get_user_model
+from .models import Case, CaseLog, Project, TrackedMetric
 
 User = get_user_model()
 

@@ -2,9 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
-from pages.forms import CaseLogCreateForm
 from pages.models import Case, CaseLog, Project, TrackedMetric
-from pages.views import CaseLogCreateView
 
 
 class HomepageTests(SimpleTestCase):

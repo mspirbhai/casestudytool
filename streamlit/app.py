@@ -9,8 +9,6 @@ import streamlit.components.v1 as components
 
 # Import Profiling Capability
 from ydata_profiling import ProfileReport
-from streamlit_pandas_profiling import st_profile_report
-
 import sweetviz as sv
 import codecs
 
@@ -60,15 +58,31 @@ if choice == "About":
     st.write(
         textwrap.dedent(
             """
-        This web app is an interactive web-based tool that allows users to explore a dataset, select features, and run machine learning models on them. The app is designed to be easy to use and accessible to both beginners and experienced data scientists.
+        This web app is an interactive web-based tool that allows users to explore a \
+            dataset, select features, and run machine learning models on them. The app \
+                is designed to be easy to use and accessible to both beginners and \
+                    experienced data scientists.
 
-        The app starts by displaying the dataset in a table format, allowing users to explore the data and get a sense of its structure and content. Users can sort and filter the data to focus on specific subsets of the data, and can also download the dataset for further analysis.
+        The app starts by displaying the dataset in a table format, allowing users to \
+            explore the data and get a sense of its structure and content. Users can \
+                sort and filter the data to focus on specific subsets of the data, and \
+                    can also download the dataset for further analysis.
 
-        Once users have selected the target of the dataset they want to work with, they can choose a feature to use as the target variable for machine learning. The app currently only supports regression. Users can choose the parameter to train on with the app's default settings for a quick and easy analysis.
+        Once users have selected the target of the dataset they want to work with, they\
+            can choose a feature to use as the target variable for machine learning. \
+                The app currently only supports regression. Users can choose the \
+                    parameter to train on with the app's default settings for a quick \
+                        and easy analysis.
 
-        Once the model has been trained, the app displays the results in an easy-to-read format, including accuracy metrics of the model's performance. Users can also explore the model's predictions and see how well it predicts values for new data.
+        Once the model has been trained, the app displays the results in an \
+            easy-to-read format, including accuracy metrics of the model's performance.\
+                 Users can also explore the model's predictions and see how well it \
+                    predicts values for new data.
 
-        Finally, the app allows users to download the best calculated model as a file, allowing them to save the model and use it in other applications or workflows. This feature makes it easy for users to take their work from the app and apply it to real-world problems.
+        Finally, the app allows users to download the best calculated model as a file, \
+            allowing them to save the model and use it in other applications or \
+                workflows. This feature makes it easy for users to take their work from\
+                     the app and apply it to real-world problems.
         """
         )
     )
@@ -81,7 +95,8 @@ elif choice == "Data Collection":
         df = pd.json_normalize(data)
         df.to_csv("staticfiles/streamlit/caselogs.csv", index=None)
     st.info(
-        "To add a row scroll to the bottom, to delete a row, select one or more rows and press delete"
+        "To add a row scroll to the bottom, to delete a row, select one or more rows \
+            and press delete"
     )
     st.data_editor(df, num_rows="dynamic")
 elif choice == "Profiling - Pandas Profiling":
@@ -135,6 +150,6 @@ elif choice == "Download":
     st.title("Download the best model calculated")
     if os.path.exists("staticfiles/streamlit/best_model.pkl"):
         with open("staticfiles/streamlit/best_model.pkl", "rb") as f:
-            st.download_button("Download Model", f, file_name="best_model")
+            st.download_button("Download Model", f, file_name="best_model.pkl")
     else:
         st.info("No model found")

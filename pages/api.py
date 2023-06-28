@@ -1,8 +1,9 @@
-from ninja import NinjaAPI, ModelSchema
-from ninja.orm import create_schema
 from typing import List, Optional
-from pages.models import CaseLog, Case, TrackedMetric, Project
+
 from django.contrib.auth import get_user_model
+from ninja import ModelSchema, NinjaAPI
+
+from pages.models import CaseLog, TrackedMetric
 
 api = NinjaAPI()
 
